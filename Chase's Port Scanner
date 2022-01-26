@@ -1,0 +1,70 @@
+# Chase's Port Scanner
+
+import socket
+import datetime
+
+scn_fl = open("Chase Culbertson Port Scan.txt", "w")
+scn_fl.write("Welcome to my Port Scanner\n"
+             "----------------------------\n\n")
+
+answer = False
+host_ip = ""
+target = ""
+open_port = 0
+port = 1
+choice = "y"
+
+while choice == "y":
+    while answer is False:
+        target = input("Enter a host to scan: ")
+        try:
+            host_ip = socket.gethostbyname(target)
+            print("{} - {}".format(target, host_ip))
+            scn_fl.write("****************************\n")
+            scn_fl.write("{} - {}\n".format(target, host_ip))
+            answer = True
+        except socket.gaierror:
+            print("Host name could not be resolved")
+            scn_fl.write(target + ": Host name could not be resolved\n\n")
+
+    answer = False
+    open_port = 0
+    # Gets current time/date for beginning of scan
+    t1 = datetime.datetime.now()
+    print(t1.strftime("Start time is %b %d %Y %H:%M:%S\n"))
+    scn_fl.write(t1.strftime("Start time is %b %d %Y %H:%M:%S\n\n"))
+
+    for port in range(1, 1026):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(0.1)
+        status = sock.connect_ex((host_ip, port))
+
+        if status == 0:
+            print("Port {} is open. Code: {}".format(port, status))
+            scn_fl.write("{}: Port {} is open\n".format(target, port))
+            open_port += 1
+            sock.close()
+        else:
+            print("Port {} returned code: {}".format(port, status))
+            pass
+        port += 1
+    print("Total open ports: {} \n".format(open_port))
+    scn_fl.write("Total open ports: {} \n\n".format(open_port))
+
+    # Gets current time/date at the end of scanning all ports
+    t2 = datetime.datetime.now()
+    print(t2.strftime("End time is %b %d %Y %H:%M:%S"))
+    scn_fl.write(t2.strftime("End time is %b %d %Y %H:%M:%S\n"))
+
+    # Calculates the total time from start to end
+    t3 = t2 - t1
+    avgTotal = str(t3).split(".")[0]
+    print("Total scan time was {}\n".format(avgTotal))
+    scn_fl.write("Total scan time was {}\n\n".format(avgTotal))
+
+    choice = input("Do you want to scan another host? (y/n) ")
+
+print("Thank you, Goodbye!")
+scn_fl.write("Thank you, Goodbye!\n\n\n\n")
+scn_fl.write("Source: https://docs.python.org/3/library/")
+scn_fl.close()
